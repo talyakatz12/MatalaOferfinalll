@@ -1,12 +1,17 @@
 export default function SearchBar({ value, onChange, onSearch }) {
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    onSearch();
+  };
+
   return (
-    <div className="search-bar">
+    <form className="search-bar" onSubmit={handleSubmit}>
       <input
         placeholder="Enter company name..."
         value={value}
         onChange={(e) => onChange(e.target.value)}
       />
-      <button onClick={onSearch}>search</button>
-    </div>
+      <button type="submit">Search</button>
+    </form>
   );
 }

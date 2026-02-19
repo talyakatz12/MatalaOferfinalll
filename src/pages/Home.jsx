@@ -12,36 +12,38 @@ export default function Home() {
   const q = searchParams.get('search') || '';
 
   const [company, setCompany] = useState(q);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (!q) {
-      setCompany('');
-      setEmployees([]);
-    } else {
+    const loadEmployees = async () => {
+      if (!q) {
+        setEmployees([]);
+        return;
+      }
+
       setCompany(q);
-    }
+      setLoading(true);
+
+      try {
+        const res = await fetch(
+          `https://randomuser.me/api/?results=10&seed=${q}`
+        );
+        const data = await res.json();
+        setEmployees(data.results);
+      } catch (err) {
+        setEmployees([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadEmployees();
   }, [q, setEmployees]);
 
   const searchEmployees = async () => {
     if (!company.trim()) return;
 
     setSearchParams({ search: company.trim() });
-
-    try {
-      const res = await fetch(
-        `https://randomuser.me/api/?results=10&seed=${company.trim()}`
-      );
-
-      if (!res.ok) {
-        throw new Error('API error');
-      }
-
-      const data = await res.json();
-      setEmployees(data.results);
-    } catch (err) {
-      alert('Failed to load employees');
-      setEmployees([]);
-    }
   };
 
   const isSearchMode = !!q;
@@ -64,15 +66,19 @@ export default function Home() {
             : 'Employees of the month:'}
         </h3>
 
-        <div className="grid">
-          {listToShow.map((emp, i) => (
-            <EmployeeItem
-              key={emp?.login?.uuid || i}
-              emp={emp}
-              index={i}
-            />
-          ))}
-        </div>
+        {loading && <p>Loading...</p>}
+
+        {!loading && (
+          <div className="grid">
+            {listToShow.map((emp, i) => (
+              <EmployeeItem
+                key={emp?.login?.uuid || i}
+                emp={emp}
+                index={i}
+              />
+            ))}
+          </div>
+        )}
       </div>
     </>
   );

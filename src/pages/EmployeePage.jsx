@@ -1,4 +1,4 @@
-import { useContext, useEffect } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { EmployeesContext } from '../context/EmployeesContext';
 
@@ -6,10 +6,6 @@ import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 
 export default function EmployeePage() {
-  useEffect(() => {
-  window.scrollTo(0, 0);
- }, []);
-
   const { employees, monthEmployees, favorites, toggleFavorite } =
     useContext(EmployeesContext);
 
@@ -19,14 +15,34 @@ export default function EmployeePage() {
   const company = params.get('company');
   const index = Number(params.get('index'));
 
-  // כשעושים אחורה אם כבר חיפשנו משהו מחזירים עובדים מהחיפוש אם עדיין לא חיפשנו חוזרים לדף הבית
-  const list = company ? employees : monthEmployees;
+  const [emp, setEmp] = useState(null);
 
-  const realIndex = list.findIndex((_, i) => i === index);
-  const emp = list[realIndex];
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
+  useEffect(() => {
+    const loadEmployee = async () => {
+      let list = company ? employees : monthEmployees;
+
+      if (!list || list.length === 0) {
+        const url = company
+          ? `https://randomuser.me/api/?results=10&seed=${company}`
+          : `https://randomuser.me/api/?results=2&seed=month`;
+
+        const res = await fetch(url);
+        const data = await res.json();
+        list = data.results;
+      }
+
+      setEmp(list[index]);
+    };
+
+    loadEmployee();
+  }, [company, index, employees, monthEmployees]);
 
   if (!emp) {
-    return <p>Sorry employee not found</p>;
+    return <p>Loading...</p>;
   }
 
   const isFav = favorites.some(
@@ -41,10 +57,9 @@ export default function EmployeePage() {
 
       <div className="employee-details">
         <img
-          src={emp.picture?.large }
+          src={emp.picture?.large}
           alt="employee"
         />
-
 
         <div className="details">
           <p>Age: {emp.dob.age}</p>
@@ -54,7 +69,7 @@ export default function EmployeePage() {
           <p>Phone: {emp.phone}</p>
         </div>
       </div>
-      
+
       <span
         className="star"
         onClick={() => toggleFavorite(emp)}
@@ -70,10 +85,9 @@ export default function EmployeePage() {
 
       <MapContainer
         center={[
-         Number(emp.location.coordinates.latitude),
-         Number(emp.location.coordinates.longitude)
+          Number(emp.location.coordinates.latitude),
+          Number(emp.location.coordinates.longitude)
         ]}
-
         zoom={10}
         style={{ height: '300px', width: '100%', marginTop: '20px' }}
       >
@@ -84,7 +98,6 @@ export default function EmployeePage() {
           position={[
             Number(emp.location.coordinates.latitude),
             Number(emp.location.coordinates.longitude)
-
           ]}
         >
           <Popup>

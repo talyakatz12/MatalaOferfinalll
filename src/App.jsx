@@ -13,25 +13,31 @@ export default function App() {
 
   useEffect(() => {
     const loadMonthEmployees = async () => {
-      const res = await fetch('https://randomuser.me/api/?results=6');
-      const data = await res.json();
-
-      const shuffled = [...data.results].sort(() => 0.5 - Math.random());
-      setMonthEmployees(shuffled.slice(0, 2));
+      try {
+        const res = await fetch(
+          'https://randomuser.me/api/?results=2&seed=month'
+        );
+        const data = await res.json();
+        setMonthEmployees(data.results);
+      } catch (err) {
+        console.error('Failed to load month employees');
+      }
     };
 
     loadMonthEmployees();
-  }, []);
+  }, [setMonthEmployees]);
 
   return (
     <BrowserRouter>
-      <Header />
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/favs" element={<Favorites />} />
-        <Route path="/employee" element={<EmployeePage />} />
-        <Route path="*" element={<Page404 />} />
-      </Routes>
+      <div className="container">
+        <Header />
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/favs" element={<Favorites />} />
+          <Route path="/employee" element={<EmployeePage />} />
+          <Route path="*" element={<Page404 />} />
+        </Routes>
+      </div>
     </BrowserRouter>
   );
 }
