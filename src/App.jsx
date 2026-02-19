@@ -36,6 +36,7 @@ export default function App() {
           <Route path="/" element={<Home />} />
           <Route path="/favs" element={<Favorites />} />
           {/* 👇 כאן התיקון – מוסיפים גם :company */}
+// App.jsx
           <Route path="/employee/:company/:uuid" element={<EmployeePage />} />
           <Route path="*" element={<Page404 />} />
         </Routes>
