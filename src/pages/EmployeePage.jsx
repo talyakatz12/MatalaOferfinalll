@@ -1,77 +1,48 @@
-import { useContext, useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useContext, useEffect } from 'react';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import { EmployeesContext } from '../context/EmployeesContext';
-
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
-import L from 'leaflet';
-
-import markerIcon from 'leaflet/dist/images/marker-icon.png';
-import markerShadow from 'leaflet/dist/images/marker-shadow.png';
-
-delete L.Icon.Default.prototype._getIconUrl;
-
-L.Icon.Default.mergeOptions({
-  iconUrl: markerIcon,
-  shadowUrl: markerShadow,
-});
 
 export default function EmployeePage() {
-  const { employees, favorites, toggleFavorite } =
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
+  const { employees, monthEmployees, favorites, toggleFavorite } =
     useContext(EmployeesContext);
 
-  const { uuid } = useParams();
+  const [params] = useSearchParams();
   const navigate = useNavigate();
 
-  const [emp, setEmp] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const company = params.get('company');
+  const index = Number(params.get('index'));
 
-  useEffect(() => {
-    const loadEmployee = async () => {
-      try {
-        let list = employees;
+  const list = company ? employees : monthEmployees;
+  const emp = list[index];
 
-        if (!list || list.length === 0) {
-          const res = await fetch(
-            `https://randomuser.me/api/?results=10&seed=default`
-          );
-          const data = await res.json();
-          list = data.results;
-        }
+  if (!emp) {
+    return <p>Sorry employee not found</p>;
+  }
 
-        const found = list.find(
-          (item) => item.login.uuid === uuid
-        );
+  // Clean coordinates from API (no defaults)
+  const rawLat = emp.location.coordinates.latitude;
+  const rawLng = emp.location.coordinates.longitude;
 
-        setEmp(found || null);
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const lat = parseFloat(String(rawLat).trim());
+  const lng = parseFloat(String(rawLng).trim());
 
-    loadEmployee();
-  }, [uuid, employees]);
-
-  if (loading) return <p>Loading...</p>;
-  if (!emp) return <p>Employee not found</p>;
-
-  const isFav = favorites.some(
-    (f) => f.login.uuid === emp.login.uuid
-  );
-
-  const lat = Number(emp.location.coordinates.latitude);
-  const lng = Number(emp.location.coordinates.longitude);
+  const isFav = favorites.some((f) => f.login.uuid === emp.login.uuid);
 
   return (
-    <div className="employee-page">
+    <div className="employee-page"> 
+    <div className="container">
       <h2>
-        info about {emp.name.first} {emp.name.last}
+        Info about {emp.name.first} {emp.name.last}
       </h2>
 
       <div className="employee-details">
-        <img src={emp.picture.large} alt="employee" />
+        <img src={emp.picture?.large} alt="employee" />
 
         <div className="details">
           <p>Age: {emp.dob.age}</p>
@@ -81,27 +52,28 @@ export default function EmployeePage() {
           <p>Phone: {emp.phone}</p>
         </div>
       </div>
+            </div>
 
-      <span
-        className="star"
+
+     
+      <span className="star"
         onClick={() => toggleFavorite(emp)}
         style={{
           cursor: 'pointer',
           color: isFav ? 'gold' : 'black',
-          fontSize: '40px',
+          fontWeight: 'bold',
+          fontSize: '50px'
         }}
       >
-        ★
+        *
       </span>
 
       <MapContainer
         center={[lat, lng]}
-        zoom={10}
+        zoom={4}   // ⭐ פחות קרוב → לא רואים רק ים
         style={{ height: '300px', width: '100%', marginTop: '20px' }}
       >
-        <TileLayer
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        />
+        <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
 
         <Marker position={[lat, lng]}>
           <Popup>

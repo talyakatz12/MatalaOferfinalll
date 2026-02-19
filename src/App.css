@@ -1,5 +1,3 @@
-
-
 /* In this file, I asked ChatGPT to help organize the CSS so it would look cleaner and more structured. I hope that’s okay. */
 body {
   margin: 0;
@@ -158,6 +156,7 @@ button:hover {
 .details p {
   margin: 5px 0;
 }
+
 /* 📱 Mobile Responsive */
 @media (max-width: 768px) {
 

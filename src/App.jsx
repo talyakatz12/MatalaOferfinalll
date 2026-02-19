@@ -1,7 +1,6 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { useEffect, useContext } from 'react';
 import { EmployeesContext } from './context/EmployeesContext';
-
 import Home from './pages/Home';
 import Favorites from './pages/Favorites';
 import EmployeePage from './pages/EmployeePage';
@@ -11,30 +10,28 @@ import Header from './components/Header';
 export default function App() {
   const { setMonthEmployees } = useContext(EmployeesContext);
 
-  useEffect(() => {
-    const loadMonthEmployees = async () => {
-      try {
-        const res = await fetch(
-          'https://randomuser.me/api/?results=2&seed=month'
-        );
-        const data = await res.json();
-        setMonthEmployees(data.results);
-      } catch (err) {
-        console.error('Failed to load month employees');
-      }
-    };
+useEffect(() => {
+  const loadMonthEmployees = async () => {
+    const res = await fetch("https://randomuser.me/api/?results=6&seed=month");
+    const data = await res.json();
 
-    loadMonthEmployees();
-  }, [setMonthEmployees]);
+    // No random, no shuffle — fixed list
+    setMonthEmployees(data.results.slice(0, 2));
+  };
+
+  loadMonthEmployees();
+}, []);
+
+
 
   return (
     <BrowserRouter>
+      <Header />
       <div className="container">
-        <Header />
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/favs" element={<Favorites />} />
-          <Route path="/employee/:uuid" element={<EmployeePage />} />
+          <Route path="/employee" element={<EmployeePage />} />
           <Route path="*" element={<Page404 />} />
         </Routes>
       </div>

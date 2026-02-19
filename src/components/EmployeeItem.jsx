@@ -1,20 +1,19 @@
 import { useContext } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { EmployeesContext } from '../context/EmployeesContext';
 
-export default function EmployeeItem({
-  emp,
-  showMoreInfo = true
-}) {
+export default function EmployeeItem({ emp, index, showMoreInfo = true }) {
   const { favorites, toggleFavorite } = useContext(EmployeesContext);
   const navigate = useNavigate();
+  const [params] = useSearchParams();
+  const company = params.get('search');
 
-  const isFav = favorites.some(
-    (f) => f.login.uuid === emp.login.uuid
-  );
+  const isFav = favorites.some((f) => f.login.uuid === emp.login.uuid);
 
   const goToEmployee = () => {
-    navigate(`/employee/${emp.login.uuid}`);
+    navigate(
+      `/employee?${company ? `company=${company}&` : ''}index=${index}`
+    );
   };
 
   return (
@@ -31,20 +30,20 @@ export default function EmployeeItem({
         <p>Age: {emp.dob.age}</p>
         <p>Country: {emp.location.country}</p>
 
-        {showMoreInfo && (
-          <button onClick={goToEmployee}>more info</button>
-        )}
+        {showMoreInfo && <button onClick={goToEmployee}>More info</button>}
       </div>
 
       <span
         className="star"
         onClick={() => toggleFavorite(emp)}
         style={{
+          cursor: 'pointer',
           color: isFav ? 'gold' : 'black',
-          fontSize: '40px'
+          fontWeight: 'bold',
+          fontSize: '50px'
         }}
       >
-        ★
+        *
       </span>
     </div>
   );

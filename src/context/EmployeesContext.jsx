@@ -1,4 +1,4 @@
-import { createContext, useState } from 'react';
+import { createContext, useState, useEffect } from 'react';
 
 export const EmployeesContext = createContext();
 
@@ -10,17 +10,27 @@ export function EmployeesProvider({ children }) {
   });
   const [monthEmployees, setMonthEmployees] = useState([]);
 
+  // Save employees to localStorage
+  useEffect(() => {
+    if (employees.length > 0) {
+      localStorage.setItem('employees', JSON.stringify(employees));
+    }
+  }, [employees]);
+
+  // Load employees on refresh
+  useEffect(() => {
+    const saved = localStorage.getItem('employees');
+    if (saved) {
+      setEmployees(JSON.parse(saved));
+    }
+  }, []);
+
   const toggleFavorite = (emp) => {
     let updatedFavs;
-
-    const exists = favorites.find(
-      (f) => f.login.uuid === emp.login.uuid
-    );
+    const exists = favorites.find((f) => f.login.uuid === emp.login.uuid);
 
     if (exists) {
-      updatedFavs = favorites.filter(
-        (f) => f.login.uuid !== emp.login.uuid
-      );
+      updatedFavs = favorites.filter((f) => f.login.uuid !== emp.login.uuid);
     } else {
       updatedFavs = [...favorites, emp];
     }
