@@ -1,27 +1,20 @@
-// components/EmployeeItem.jsx
 import { useContext } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { EmployeesContext } from '../context/EmployeesContext';
 
 export default function EmployeeItem({
   emp,
-  index,
   showMoreInfo = true
 }) {
   const { favorites, toggleFavorite } = useContext(EmployeesContext);
   const navigate = useNavigate();
-  const [params] = useSearchParams();
-
-  const company = params.get('search'); // שם החברה מהחיפוש
 
   const isFav = favorites.some(
     (f) => f.login.uuid === emp.login.uuid
   );
 
   const goToEmployee = () => {
-    if (!company) return; // אם אין חברה ב־URL, לא ננווט
-
-   navigate(`/employee/${company}/${emp.login.uuid}`);
+    navigate(`/employee/${emp.login.uuid}`);
   };
 
   return (
@@ -47,13 +40,11 @@ export default function EmployeeItem({
         className="star"
         onClick={() => toggleFavorite(emp)}
         style={{
-          cursor: 'pointer',
           color: isFav ? 'gold' : 'black',
-          fontWeight: 'bold',
-          fontSize: '50px'
+          fontSize: '40px'
         }}
       >
-        *
+        ★
       </span>
     </div>
   );

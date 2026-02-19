@@ -10,11 +10,10 @@ export default function Favorites() {
       <h2>Your favorite employees</h2>
 
       <div className="grid">
-        {favorites.map((emp, i) => (
+        {favorites.map((emp) => (
           <EmployeeItem
             key={emp.login.uuid}
             emp={emp}
-            index={i}
             showMoreInfo={false}
           />
         ))}

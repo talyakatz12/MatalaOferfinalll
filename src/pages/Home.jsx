@@ -21,7 +21,6 @@ export default function Home() {
         return;
       }
 
-      setCompany(q);
       setLoading(true);
 
       try {
@@ -40,9 +39,8 @@ export default function Home() {
     loadEmployees();
   }, [q, setEmployees]);
 
-  const searchEmployees = async () => {
+  const searchEmployees = () => {
     if (!company.trim()) return;
-
     setSearchParams({ search: company.trim() });
   };
 
@@ -70,11 +68,10 @@ export default function Home() {
 
         {!loading && (
           <div className="grid">
-            {listToShow.map((emp, i) => (
+            {listToShow.map((emp) => (
               <EmployeeItem
-                key={emp?.login?.uuid || i}
+                key={emp.login.uuid}
                 emp={emp}
-                index={i}
               />
             ))}
           </div>

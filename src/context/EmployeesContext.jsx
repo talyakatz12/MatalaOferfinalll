@@ -3,13 +3,13 @@ import { createContext, useState } from 'react';
 export const EmployeesContext = createContext();
 
 export function EmployeesProvider({ children }) {
-  const [employees, setEmployees] = useState([]);         
+  const [employees, setEmployees] = useState([]);
   const [favorites, setFavorites] = useState(() => {
     const saved = localStorage.getItem('favs');
     return saved ? JSON.parse(saved) : [];
-  });  const [monthEmployees, setMonthEmployees] = useState([]); 
+  });
+  const [monthEmployees, setMonthEmployees] = useState([]);
 
-  
   const toggleFavorite = (emp) => {
     let updatedFavs;
 

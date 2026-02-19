@@ -11,7 +11,9 @@ export default function Header() {
       >
         Home
       </Link>
+
       <span> | </span>
+
       <Link
         to="/favs"
         className={location.pathname === '/favs' ? 'active' : ''}

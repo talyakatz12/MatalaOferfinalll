@@ -1,4 +1,3 @@
-// App.jsx
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { useEffect, useContext } from 'react';
 import { EmployeesContext } from './context/EmployeesContext';
@@ -35,9 +34,7 @@ export default function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/favs" element={<Favorites />} />
-          {/* 👇 כאן התיקון – מוסיפים גם :company */}
-// App.jsx
-          <Route path="/employee/:company/:uuid" element={<EmployeePage />} />
+          <Route path="/employee/:uuid" element={<EmployeePage />} />
           <Route path="*" element={<Page404 />} />
         </Routes>
       </div>

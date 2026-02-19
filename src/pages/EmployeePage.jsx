@@ -17,8 +17,10 @@ L.Icon.Default.mergeOptions({
 });
 
 export default function EmployeePage() {
-  const { employees, favorites, toggleFavorite } = useContext(EmployeesContext);
-  const { company, uuid } = useParams();
+  const { employees, favorites, toggleFavorite } =
+    useContext(EmployeesContext);
+
+  const { uuid } = useParams();
   const navigate = useNavigate();
 
   const [emp, setEmp] = useState(null);
@@ -30,12 +32,17 @@ export default function EmployeePage() {
         let list = employees;
 
         if (!list || list.length === 0) {
-          const res = await fetch(`https://randomuser.me/api/?results=10&seed=${company}`);
+          const res = await fetch(
+            `https://randomuser.me/api/?results=10&seed=default`
+          );
           const data = await res.json();
           list = data.results;
         }
 
-        const found = list.find((item) => item.login.uuid === uuid);
+        const found = list.find(
+          (item) => item.login.uuid === uuid
+        );
+
         setEmp(found || null);
       } catch (err) {
         console.error(err);
@@ -45,26 +52,61 @@ export default function EmployeePage() {
     };
 
     loadEmployee();
-  }, [company, uuid, employees]);
+  }, [uuid, employees]);
 
   if (loading) return <p>Loading...</p>;
   if (!emp) return <p>Employee not found</p>;
 
-  const lat = parseFloat(emp.location.coordinates.latitude);
-  const lng = parseFloat(emp.location.coordinates.longitude);
+  const isFav = favorites.some(
+    (f) => f.login.uuid === emp.login.uuid
+  );
+
+  const lat = Number(emp.location.coordinates.latitude);
+  const lng = Number(emp.location.coordinates.longitude);
 
   return (
     <div className="employee-page">
-      <h2>info about {emp.name.first} {emp.name.last}</h2>
+      <h2>
+        info about {emp.name.first} {emp.name.last}
+      </h2>
+
+      <div className="employee-details">
+        <img src={emp.picture.large} alt="employee" />
+
+        <div className="details">
+          <p>Age: {emp.dob.age}</p>
+          <p>Country: {emp.location.country}</p>
+          <p>City: {emp.location.city}</p>
+          <p>Email: {emp.email}</p>
+          <p>Phone: {emp.phone}</p>
+        </div>
+      </div>
+
+      <span
+        className="star"
+        onClick={() => toggleFavorite(emp)}
+        style={{
+          cursor: 'pointer',
+          color: isFav ? 'gold' : 'black',
+          fontSize: '40px',
+        }}
+      >
+        ★
+      </span>
 
       <MapContainer
         center={[lat, lng]}
         zoom={10}
-        style={{ height: '300px', width: '100%' }}
+        style={{ height: '300px', width: '100%', marginTop: '20px' }}
       >
-        <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+        <TileLayer
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        />
+
         <Marker position={[lat, lng]}>
-          <Popup>{emp.location.city}, {emp.location.country}</Popup>
+          <Popup>
+            {emp.location.city}, {emp.location.country}
+          </Popup>
         </Marker>
       </MapContainer>
 
