@@ -1,3 +1,4 @@
+// components/EmployeeItem.jsx
 import { useContext } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { EmployeesContext } from '../context/EmployeesContext';
@@ -11,16 +12,16 @@ export default function EmployeeItem({
   const navigate = useNavigate();
   const [params] = useSearchParams();
 
-  const company = params.get('search');
+  const company = params.get('search'); // שם החברה מהחיפוש
 
   const isFav = favorites.some(
     (f) => f.login.uuid === emp.login.uuid
   );
 
   const goToEmployee = () => {
-    navigate(
-      `/employee?${company ? `company=${company}&` : ''}index=${index}`
-    );
+    if (!company) return; // אם אין חברה ב־URL, לא ננווט
+
+   navigate(`/employee/${company}/${emp.login.uuid}`);
   };
 
   return (
