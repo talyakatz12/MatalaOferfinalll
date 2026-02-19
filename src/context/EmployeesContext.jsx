@@ -10,14 +10,12 @@ export function EmployeesProvider({ children }) {
   });
   const [monthEmployees, setMonthEmployees] = useState([]);
 
-  // Save employees to localStorage
   useEffect(() => {
     if (employees.length > 0) {
       localStorage.setItem('employees', JSON.stringify(employees));
     }
   }, [employees]);
 
-  // Load employees on refresh
   useEffect(() => {
     const saved = localStorage.getItem('employees');
     if (saved) {

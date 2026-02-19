@@ -25,7 +25,6 @@ export default function EmployeePage() {
     return <p>Sorry employee not found</p>;
   }
 
-  // Clean coordinates from API (no defaults)
   const rawLat = emp.location.coordinates.latitude;
   const rawLng = emp.location.coordinates.longitude;
 
@@ -70,7 +69,7 @@ export default function EmployeePage() {
 
       <MapContainer
         center={[lat, lng]}
-        zoom={4}   // ⭐ פחות קרוב → לא רואים רק ים
+        zoom={4}  
         style={{ height: '300px', width: '100%', marginTop: '20px' }}
       >
         <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />

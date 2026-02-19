@@ -15,7 +15,6 @@ useEffect(() => {
     const res = await fetch("https://randomuser.me/api/?results=6&seed=month");
     const data = await res.json();
 
-    // No random, no shuffle — fixed list
     setMonthEmployees(data.results.slice(0, 2));
   };
 
